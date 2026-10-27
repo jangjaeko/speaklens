@@ -87,7 +87,7 @@ test:
 # On Render, all four databases live in one Postgres instance. DATABASE_URL points
 # at the primary database; the others reuse its host and credentials with a
 # different database name (see docs/decisions/002-hosting.md).
-<% production_url = ->(name) { ENV["DATABASE_URL"].presence&.sub(%r{/[^/?]*(\?|\z)}, "/#{name}\\1") } %>
+<% production_url = ->(name) { ENV["DATABASE_URL"].presence&.then { |url| URI(url).tap { |uri| uri.path = "/#{name}" }.to_s } } %>
 production:
   primary: &primary_production
     <<: *default
