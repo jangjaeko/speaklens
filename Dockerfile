@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# This Dockerfile is designed for production, not development. Deployed to Render (see render.yaml); to build and run by hand:
 # docker build -t speaklens .
 # docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name speaklens speaklens
 
