@@ -1,0 +1,36 @@
+# Render Blueprint: infrastructure as code for production.
+# See docs/decisions/002-hosting.md for why these settings were chosen.
+services:
+  - type: web
+    name: speaklens
+    runtime: docker
+    plan: 0.5c-512mb
+    region: ohio
+    healthCheckPath: /up
+    # Deploy only after GitHub Actions CI passes on main.
+    autoDeployTrigger: checksPass
+    # Creates/migrates all four databases (primary, cache, queue, cable) once per deploy.
+    preDeployCommand: ./bin/rails db:prepare
+    # Run Puma directly on Render's $PORT instead of the Dockerfile's Thruster CMD.
+    dockerCommand: ./bin/rails server
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: speaklens-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      # Run Solid Queue inside the Puma process (no separate worker service).
+      - key: SOLID_QUEUE_IN_PUMA
+        value: "true"
+      # One Puma process fits comfortably in 512 MB alongside Solid Queue.
+      - key: WEB_CONCURRENCY
+        value: "1"
+
+databases:
+  - name: speaklens-db
+    plan: 0.1c-256mb
+    region: ohio
+    databaseName: speaklens_production
+    user: speaklens
+    postgresMajorVersion: "16"

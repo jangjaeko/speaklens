@@ -84,21 +84,23 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# On Render, all four databases live in one Postgres instance. DATABASE_URL points
+# at the primary database; the others reuse its host and credentials with a
+# different database name (see docs/decisions/002-hosting.md).
+<% production_url = ->(name) { ENV["DATABASE_URL"].presence&.sub(%r{/[^/?]*(\?|\z)}, "/#{name}\\1") } %>
 production:
   primary: &primary_production
     <<: *default
-    database: speaklens_production
-    username: speaklens
-    password: <%= ENV["SPEAKLENS_DATABASE_PASSWORD"] %>
+    url: <%= production_url.("speaklens_production") %>
   cache:
     <<: *primary_production
-    database: speaklens_production_cache
+    url: <%= production_url.("speaklens_production_cache") %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: speaklens_production_queue
+    url: <%= production_url.("speaklens_production_queue") %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: speaklens_production_cable
+    url: <%= production_url.("speaklens_production_cable") %>
     migrations_paths: db/cable_migrate
