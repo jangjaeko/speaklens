@@ -1,0 +1,47 @@
+<% content_for :title, "New recording" %>
+
+<div class="mx-auto md:w-2/3 w-full">
+  <h1 class="font-bold text-4xl">New recording</h1>
+
+  <% if @recording.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-5">
+      <ul>
+        <% @recording.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @recording, class: "contents" do |form| %>
+    <div class="my-5">
+      <%= form.label :audio, "Audio file", class: "font-medium" %>
+      <%= form.file_field :audio, accept: "audio/*", required: true, class: "block mt-2" %>
+    </div>
+
+    <div class="my-5 p-4 rounded-lg bg-amber-50">
+      <p class="text-sm">Please let the other person know you're recording before you start.</p>
+      <label class="flex items-center gap-2 mt-3 font-medium">
+        <%= form.check_box :consent %>
+        The other person knows this conversation is being recorded.
+      </label>
+    </div>
+
+    <fieldset class="my-5">
+      <legend class="font-medium">Privacy</legend>
+      <label class="flex items-center gap-2 mt-2">
+        <%= form.check_box :delete_audio_after_transcription %>
+        Delete the audio file after it is transcribed
+      </label>
+      <label class="flex items-center gap-2 mt-2">
+        <%= form.check_box :discard_others_utterances %>
+        Keep only my speech; discard the other person's after analysis
+      </label>
+    </fieldset>
+
+    <div class="flex items-center gap-4">
+      <%= form.submit "Upload", class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+      <%= link_to "Cancel", recordings_path, class: "text-gray-700 underline hover:no-underline" %>
+    </div>
+  <% end %>
+</div>
