@@ -1,4 +1,5 @@
 class Recording < ApplicationRecord
+  MAX_DURATION = 5.minutes
   MAX_AUDIO_SIZE = 25.megabytes
   # Chrome records audio/webm, Safari audio/mp4. Content sniffing can label either as video/*.
   ALLOWED_AUDIO_TYPES = %w[audio/webm audio/mp4 audio/mpeg audio/ogg audio/wav audio/x-wav video/webm video/mp4].freeze

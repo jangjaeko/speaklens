@@ -13,18 +13,36 @@
     </div>
   <% end %>
 
-  <%= form_with model: @recording, class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.label :audio, "Audio file", class: "font-medium" %>
-      <%= form.file_field :audio, accept: "audio/*", required: true, class: "block mt-2" %>
-    </div>
-
+  <%= form_with model: @recording, class: "contents",
+        data: { controller: "recorder", recorder_max_seconds_value: Recording::MAX_DURATION.to_i } do |form| %>
     <div class="my-5 p-4 rounded-lg bg-amber-50">
       <p class="text-sm">Please let the other person know you're recording before you start.</p>
       <label class="flex items-center gap-2 mt-3 font-medium">
-        <%= form.check_box :consent %>
+        <%= form.check_box :consent, data: { recorder_target: "consent", action: "recorder#updateStartButton" } %>
         The other person knows this conversation is being recorded.
       </label>
+    </div>
+
+    <div class="my-5">
+      <div class="flex items-center gap-4">
+        <button type="button" data-recorder-target="startButton" data-action="recorder#start" disabled
+                class="rounded-md px-3.5 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+          Start recording
+        </button>
+        <button type="button" data-recorder-target="stopButton" data-action="recorder#stop" disabled
+                class="rounded-md px-3.5 py-2.5 bg-gray-200 hover:bg-gray-100 font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+          Stop
+        </button>
+        <span data-recorder-target="timer" class="font-mono text-lg tabular-nums">0:00</span>
+        <span class="text-sm text-gray-500">max <%= Recording::MAX_DURATION.in_minutes.to_i %> min</span>
+      </div>
+      <p data-recorder-target="message" aria-live="polite" class="mt-2 text-sm text-gray-600"></p>
+      <audio data-recorder-target="preview" controls hidden class="mt-3 w-full"></audio>
+    </div>
+
+    <div class="my-5">
+      <%= form.label :audio, "Or choose an audio file", class: "font-medium" %>
+      <%= form.file_field :audio, accept: "audio/*", required: true, data: { recorder_target: "fileInput" }, class: "block mt-2" %>
     </div>
 
     <fieldset class="my-5">
@@ -40,7 +58,7 @@
     </fieldset>
 
     <div class="flex items-center gap-4">
-      <%= form.submit "Upload", class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+      <%= form.submit "Upload", data: { recorder_target: "submitButton" }, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
       <%= link_to "Cancel", recordings_path, class: "text-gray-700 underline hover:no-underline" %>
     </div>
   <% end %>
