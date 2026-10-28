@@ -30,6 +30,8 @@ services:
 databases:
   - name: speaklens-db
     plan: 0.1c-256mb
+    # Disk is billed per GB and can grow later but never shrink; 1 GB is plenty for a demo.
+    diskSizeGB: 1
     region: oregon
     databaseName: speaklens_production
     user: speaklens
