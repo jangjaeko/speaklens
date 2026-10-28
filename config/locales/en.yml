@@ -28,4 +28,7 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  activerecord:
+    attributes:
+      recording:
+        consent_confirmed_at: "Consent"

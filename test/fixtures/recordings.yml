@@ -1,0 +1,7 @@
+one:
+  user: one
+  consent_confirmed_at: <%= 1.hour.ago %>
+
+two:
+  user: two
+  consent_confirmed_at: <%= 1.hour.ago %>
