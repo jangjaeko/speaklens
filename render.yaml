@@ -5,7 +5,7 @@ services:
     name: speaklens
     runtime: docker
     plan: 0.5c-512mb
-    region: ohio
+    region: oregon
     healthCheckPath: /up
     # Deploy only after GitHub Actions CI passes on main.
     autoDeployTrigger: checksPass
@@ -30,7 +30,7 @@ services:
 databases:
   - name: speaklens-db
     plan: 0.1c-256mb
-    region: ohio
+    region: oregon
     databaseName: speaklens_production
     user: speaklens
     postgresMajorVersion: "16"
