@@ -1,24 +1,24 @@
-# README
+# SpeakLens
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Record a conversation, keep only your own speech, and see your most-used words, filler
+habits, and grammar corrections for spoken English.
 
-Things you may want to cover:
+**Live demo:** https://speaklens-vvnb.onrender.com (work in progress)
 
-* Ruby version
+## Stack
 
-* System dependencies
+Rails 8.1 · PostgreSQL · Hotwire (Turbo + Stimulus) · Active Storage · Solid Queue ·
+Deepgram Nova-3 (speech-to-text + diarization) · Claude API (corrections) · Render
 
-* Configuration
+## Design decisions
 
-* Database creation
+- [ADR 001 — Deepgram Nova-3 for STT and diarization](docs/decisions/001-stt-provider.md)
+- [ADR 002 — Host on Render](docs/decisions/002-hosting.md)
+- [Data model](docs/data-model.md)
 
-* Database initialization
+## Development
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```sh
+bin/setup   # install gems, prepare the database, start the dev server
+bin/rails test
+```
