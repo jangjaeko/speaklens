@@ -20,10 +20,33 @@
 
     <dt class="font-medium">Keep only my speech</dt>
     <dd><%= @recording.discard_others_utterances? ? "Yes" : "No" %></dd>
+
+    <% if @recording.duration_seconds %>
+      <dt class="font-medium">Length</dt>
+      <dd><%= @recording.duration_seconds.round %> seconds</dd>
+    <% end %>
+
+    <% if @recording.audio_deleted_at %>
+      <dt class="font-medium">Audio</dt>
+      <dd>Deleted after transcription</dd>
+    <% end %>
   </dl>
 
   <% if @recording.audio.attached? %>
     <audio controls src="<%= url_for(@recording.audio) %>" class="mt-6 w-full"></audio>
+  <% end %>
+
+  <% if @recording.utterances.any? %>
+    <h2 class="font-bold text-2xl mt-10">Transcript</h2>
+    <ol class="mt-4 space-y-3">
+      <% @recording.utterances.each do |utterance| %>
+        <li>
+          <span class="font-medium"><%= utterance.speaker_name %></span>
+          <span class="text-sm text-gray-500"><%= Time.at(utterance.start_ms / 1000).utc.strftime("%-M:%S") %></span>
+          <p><%= utterance.text %></p>
+        </li>
+      <% end %>
+    </ol>
   <% end %>
 
   <%= link_to "Back to recordings", recordings_path, class: "inline-block mt-8 text-gray-700 underline hover:no-underline" %>

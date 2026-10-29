@@ -19,7 +19,8 @@ class RecordingsController < ApplicationController
     @recording = Current.user.recordings.new(recording_params)
 
     if @recording.save
-      redirect_to @recording, notice: "Recording uploaded."
+      TranscribeRecordingJob.perform_later(@recording)
+      redirect_to @recording, notice: "Recording uploaded. Transcribing now..."
     else
       render :new, status: :unprocessable_content
     end

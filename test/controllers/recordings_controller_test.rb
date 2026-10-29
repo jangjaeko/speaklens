@@ -22,7 +22,7 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "create uploads the audio" do
+  test "create uploads the audio and starts transcription" do
     assert_difference "Recording.count", 1 do
       post recordings_path, params: { recording: { audio: fixture_file_upload("sample.wav", "audio/wav"), consent: "1" } }
     end
@@ -31,6 +31,7 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to recording_path(recording)
     assert_equal users(:one), recording.user
     assert recording.audio.attached?
+    assert_enqueued_with job: TranscribeRecordingJob, args: [ recording ]
   end
 
   test "create without consent re-renders the form" do
@@ -44,6 +45,14 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
   test "show" do
     get recording_path(recordings(:one))
     assert_response :success
+  end
+
+  test "show lists the transcript" do
+    recordings(:one).utterances.create!(speaker: 1, text: "Hello there.", start_ms: 65_000, end_ms: 66_000)
+
+    get recording_path(recordings(:one))
+
+    assert_select "li", text: /Speaker B\s+1:05\s+Hello there\./
   end
 
   test "cannot see another user's recording" do
