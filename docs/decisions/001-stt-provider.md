@@ -1,6 +1,6 @@
 # 001. Use Deepgram Nova-3 for speech-to-text and speaker diarization
 
-- **Status:** Accepted
+- **Status:** Accepted, revised 2026-10-29 (see *Validation results*)
 - **Date:** 2026-10-27
 
 ## Context
@@ -50,11 +50,36 @@ Call the REST API with Ruby's standard `Net::HTTP` from a service object
 - Switching providers later means swapping `Transcription::Client`. Keep its return
   value provider-agnostic (a list of `{speaker, text, start_ms, end_ms}`).
 
-## Validation (to do before building the STT job)
+## Validation results (2026-10-29)
 
-- [ ] Record ~15s in Chrome (webm/opus) → Deepgram returns diarized utterances with "um" kept
-- [ ] Record ~15s in Safari (mp4/aac) → same
-- [ ] Save both raw responses as test fixtures (`test/fixtures/files/deepgram/`)
+Two Chrome recordings (webm/opus, laptop mic) of a scripted answer with deliberate fillers,
+sent to the pre-recorded API with `diarize`, `utterances`, `smart_format`, and `filler_words=true`.
+
+| | Nova-3 | Nova-2 |
+|---|---|---|
+| webm/opus accepted | Yes | Yes |
+| "um"/"uh" kept (10 spoken across both takes) | **0** | 4 |
+| "like", "you know", "I mean", "actually", "basically" | Kept | Kept |
+| Word accuracy | Similar; both misheard "Ruby on Rails" on a laptop mic | Similar |
+
+Despite the docs listing Nova-3 for `filler_words`, Nova-3 dropped every "um"/"uh" in our
+audio, and Nova-2 kept fewer than half.
+
+### Revised decision
+
+- **"um"/"uh" are out of scope.** No model we tested counts them reliably, and they are not
+  what the user most wants to improve. The analysis focuses on **words and phrases**:
+  most-used words, verbal habits that are real words ("like", "you know", "I mean",
+  "actually", "basically", "kind of"), grammar corrections, and more natural alternatives.
+- **Keep Nova-3** (the newer model) and drop `filler_words`: its main advantage is gone, and
+  the parameter would only add inconsistent results.
+- Final query: `model=nova-3&diarize=true&utterances=true&smart_format=true`.
+
+### Checklist
+
+- [x] Chrome (webm/opus) is accepted → `test/fixtures/files/deepgram/single_speaker.json`
+- [ ] Diarization with two real voices (both test takes had one speaker)
+- [ ] Safari (mp4/aac): accepted according to the docs, not yet tested on a device
 
 ## Sources
 

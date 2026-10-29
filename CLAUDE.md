@@ -125,7 +125,7 @@ Corrections are stored as individual records to support the review feature (Phas
 - Record → upload → STT (diarization) → speaker selection → show analysis results
 
 ### Phase 2
-- Cumulative stats: most-used words, filler frequency ("um", "like", "you know", etc.), changes over time
+- Cumulative stats: most-used words, verbal-habit frequency ("like", "you know", "I mean", etc.; "um"/"uh" are out of scope, see ADR 001), changes over time
 - If short on time, **replace charts with tables**
 
 ### Phase 3 (after 2 weeks, if time allows)
@@ -286,7 +286,7 @@ Workflow: start a feature → plan (plan mode) → save to an issue or `docs/` �
 - 녹음 → 업로드 → STT(화자 분리) → 화자 선택 → 분석 결과 표시
 
 ### 2단계
-- 누적 통계: 자주 쓰는 단어 순위, 습관어 빈도("um", "like", "you know" 등), 시간에 따른 변화
+- 누적 통계: 자주 쓰는 단어 순위, 습관어 빈도("like", "you know", "I mean" 등. "um"/"uh"는 범위 밖, ADR 001 참고), 시간에 따른 변화
 - 시간이 부족하면 차트 대신 **표로 대체**해도 된다
 
 ### 3단계 (2주 이후, 여유 있을 때)
