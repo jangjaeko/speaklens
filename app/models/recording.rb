@@ -6,6 +6,7 @@ class Recording < ApplicationRecord
 
   belongs_to :user
   has_one_attached :audio
+  has_many :utterances, -> { order(:start_ms) }, dependent: :delete_all
 
   enum :status, {
     uploaded: "uploaded",
