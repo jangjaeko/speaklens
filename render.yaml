@@ -20,6 +20,9 @@ services:
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
+      # Production-only Deepgram key, set in the Render dashboard (never committed).
+      - key: DEEPGRAM_API_KEY
+        sync: false
       # Run Solid Queue inside the Puma process (no separate worker service).
       - key: SOLID_QUEUE_IN_PUMA
         value: "true"
