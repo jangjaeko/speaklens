@@ -73,7 +73,10 @@ audio, and Nova-2 kept fewer than half.
   "actually", "basically", "kind of"), grammar corrections, and more natural alternatives.
 - **Keep Nova-3** (the newer model) and drop `filler_words`: its main advantage is gone, and
   the parameter would only add inconsistent results.
-- Final query: `model=nova-3&diarize=true&utterances=true&smart_format=true`.
+- Final query: `model=nova-3&diarize=true&smart_format=true&paragraphs=true`.
+- **Store sentences, not Deepgram "utterances".** Utterances split on every short pause
+  ("that help" / "users to track their own habits. I" / "mean,"), which breaks grammar
+  correction. `paragraphs` gives whole sentences, each tied to one speaker.
 
 ### Checklist
 

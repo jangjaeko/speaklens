@@ -24,13 +24,20 @@ class Transcription::ClientTest < ActiveSupport::TestCase
 
     assert_equal "01a189da-16f7-7e13-adc9-f004eb3c3a17", result.request_id
     assert_in_delta 60.42, result.duration_seconds
-    assert_equal 20, result.utterances.size
+    assert_equal 8, result.utterances.size
 
     first = result.utterances.first
     assert_equal 0, first.speaker
-    assert_equal "So", first.text
+    assert_equal "So I've been working as a software developer for about three years.", first.text
     assert_equal 1440, first.start_ms
-    assert_equal 2320, first.end_ms
+    assert_equal 8800, first.end_ms
+  end
+
+  test "a response with no speech has no utterances" do
+    body = { metadata: { request_id: "abc", duration: 3.0 }, results: { channels: [ { alternatives: [ { transcript: "" } ] } ] } }.to_json
+    result = FakeHttpClient.new(code: 200, body: body).transcribe(@audio, content_type: "audio/webm")
+
+    assert_empty result.utterances
   end
 
   test "rate limits and server errors are retryable" do

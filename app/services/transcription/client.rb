@@ -4,7 +4,7 @@ module Transcription
   # Sends audio to Deepgram's pre-recorded API and returns provider-agnostic results.
   # See docs/decisions/001-stt-provider.md for why these options were chosen.
   class Client
-    ENDPOINT = URI("https://api.deepgram.com/v1/listen?model=nova-3&diarize=true&utterances=true&smart_format=true")
+    ENDPOINT = URI("https://api.deepgram.com/v1/listen?model=nova-3&diarize=true&smart_format=true&paragraphs=true")
 
     Error = Class.new(StandardError)
     RetryableError = Class.new(Error) # Network trouble, rate limits, Deepgram outages
@@ -13,17 +13,23 @@ module Transcription
     Result = Data.define(:request_id, :duration_seconds, :utterances)
     Utterance = Data.define(:speaker, :text, :start_ms, :end_ms)
 
+    # Deepgram groups speech into paragraphs (one speaker each) made of sentences.
+    # We store one utterance per sentence: whole sentences are what grammar correction needs.
     def self.parse(json)
+      paragraphs = json.dig("results", "channels", 0, "alternatives", 0, "paragraphs", "paragraphs") || []
+
       Result.new(
         request_id: json.dig("metadata", "request_id"),
         duration_seconds: json.dig("metadata", "duration"),
-        utterances: json.dig("results", "utterances").map do |utterance|
-          Utterance.new(
-            speaker: utterance["speaker"],
-            text: utterance["transcript"],
-            start_ms: (utterance["start"] * 1000).round,
-            end_ms: (utterance["end"] * 1000).round
-          )
+        utterances: paragraphs.flat_map do |paragraph|
+          paragraph["sentences"].map do |sentence|
+            Utterance.new(
+              speaker: paragraph["speaker"],
+              text: sentence["text"],
+              start_ms: (sentence["start"] * 1000).round,
+              end_ms: (sentence["end"] * 1000).round
+            )
+          end
         end
       )
     end

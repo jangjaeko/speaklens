@@ -34,8 +34,8 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
     perform_with FakeClient.new(result: deepgram_result)
 
     assert_predicate @recording, :awaiting_speaker?
-    assert_equal 20, @recording.utterances.count
-    assert_equal "So", @recording.utterances.first.text
+    assert_equal 8, @recording.utterances.count
+    assert_equal "So I've been working as a software developer for about three years.", @recording.utterances.first.text
     assert_equal "01a189da-16f7-7e13-adc9-f004eb3c3a17", @recording.stt_request_id
     assert_in_delta 60.42, @recording.duration_seconds
     assert @recording.audio.attached?
