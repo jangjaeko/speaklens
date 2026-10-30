@@ -71,7 +71,7 @@ flowchart LR
 3. Background job calls the STT API → saves utterances per speaker
 4. User selects "I am speaker A"
 5. For my utterances:
-   - **Word frequency and filler counts → computed in Ruby code**
+   - **Word frequency → computed in Ruby code; verbal habits → labeled by the LLM in context, counted in Ruby (ADR 003)**
    - **Grammar correction and expression suggestions → analyzed by LLM (JSON response)**
 6. Processing status (processing → done) updates automatically via Turbo Streams
 7. Cumulative dashboard shows statistics and correction history
@@ -81,7 +81,7 @@ flowchart LR
 ## 5. Key Design Decisions (recorded as ADRs in `docs/decisions/`)
 
 1. **Speaker diarization is delegated to the STT API, not built in-house.** The user only selects their own speaker label from the results.
-2. **Statistics (word frequency, fillers) are counted in code, not by the LLM.** More accurate, no cost, and reproducible. The LLM is used only for grammar correction and expression suggestions.
+2. **The LLM judges, code counts.** Whether a phrase is a verbal habit depends on context ("I'm, like, really" vs. "I like Rails"), so the LLM labels each occurrence; Ruby validates and tallies them so numbers are accurate and reproducible. Word frequency is pure code. The LLM also does grammar correction, expression suggestions, and style feedback. (Revised 2026-10-30, ADR 003.)
 3. **LLM responses follow a fixed JSON schema and are validated before saving.** If the format breaks, retry or mark as failed.
 4. **Analysis focuses on English.** Korean requires morphological analysis and is out of scope. (Possibly handle a few Korean fillers with regex after Phase 3.)
 5. **Privacy is designed as a feature.** (See section 7.)
@@ -232,7 +232,7 @@ Workflow: start a feature → plan (plan mode) → save to an issue or `docs/` �
 3. 백그라운드 Job이 STT API 호출 → 화자별 발화(Utterance) 저장
 4. 사용자가 "이 중에 나는 A"를 선택
 5. 내 발화에 대해:
-   - **단어 빈도, 습관어 횟수 → Ruby 코드로 계산**
+   - **단어 빈도 → Ruby 코드로 계산, 습관어 → LLM이 문맥으로 판별하고 Ruby가 집계 (ADR 003)**
    - **문법 교정, 추천 표현 → LLM으로 분석 (JSON 응답)**
 6. 처리 상태(처리 중 → 완료)는 Turbo Streams로 자동 갱신
 7. 누적 대시보드에서 통계와 교정 내역 확인
@@ -242,7 +242,7 @@ Workflow: start a feature → plan (plan mode) → save to an issue or `docs/` �
 ## 5. 핵심 설계 결정 (ADR로 `docs/decisions/`에 기록)
 
 1. **화자 분리는 직접 구현하지 않고 STT API에 맡긴다.** 사용자는 결과에서 자신의 화자 라벨만 선택한다.
-2. **통계(단어 빈도, 습관어)는 LLM이 아니라 코드로 센다.** 더 정확하고 비용이 없으며 결과가 재현 가능하다. LLM은 문법 교정과 표현 추천에만 쓴다.
+2. **판단은 LLM, 집계는 코드.** 습관어인지는 문맥에 달려 있으므로("I'm, like, really" vs "I like Rails") LLM이 각 위치를 표시하고, Ruby가 검증·집계해 숫자를 정확하고 재현 가능하게 만든다. 단어 빈도는 순수 코드. LLM은 문법 교정, 표현 추천, 말투 피드백도 맡는다. (2026-10-30 수정, ADR 003)
 3. **LLM 응답은 정해진 JSON 스키마로 받고 검증 후 저장한다.** 형식이 깨지면 재시도 또는 실패 상태로 처리한다.
 4. **분석 언어는 영어에 집중한다.** 한국어는 형태소 분석이 필요해 범위 밖이다. (필요 시 습관어 몇 개만 정규식으로 처리하는 정도로 3단계 이후 검토)
 5. **개인정보 보호를 기능으로 설계한다.** (아래 7번 참고)

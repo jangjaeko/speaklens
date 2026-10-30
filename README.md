@@ -14,6 +14,7 @@ Deepgram Nova-3 (speech-to-text + diarization) · Claude API (corrections) · Re
 
 - [ADR 001 — Deepgram Nova-3 for STT and diarization](docs/decisions/001-stt-provider.md)
 - [ADR 002 — Host on Render](docs/decisions/002-hosting.md)
+- [ADR 003 — The LLM judges, code counts](docs/decisions/003-ai-judges-code-counts.md)
 - [Data model](docs/data-model.md)
 
 ## Development

@@ -1,6 +1,6 @@
 # Data Model
 
-- **Status:** Agreed (2026-10-28). Columns may still be added as features are built.
+- **Status:** Agreed (2026-10-28), Analysis and Correction revised 2026-10-30 (ADR 003).
 
 ```mermaid
 erDiagram
@@ -47,23 +47,28 @@ Index: `(recording_id, start_ms)`.
 
 ### Analysis
 
+One per recording. Filled by `AnalyzeRecordingJob` (see ADR 003 for who computes what).
+
 | Column | Type | Notes |
 |---|---|---|
 | `recording_id` | references, unique | One analysis per recording |
-| `word_stats` | jsonb | Computed in Ruby |
-| `filler_stats` | jsonb | Computed in Ruby |
-| `status` | string, enum | Tracks the LLM step separately (see below) |
+| `status` | string, enum | `pending` / `completed` / `failed`: tracks the LLM step on its own |
+| `word_stats` | jsonb | **Code.** Total and unique word counts, top words without stopwords |
+| `habit_stats` | jsonb | **AI labels, code counts.** Verbal habits the model found in context, tallied in Ruby after validation |
+| `suggestions` | jsonb | **AI.** Overused words or phrases with alternative expressions |
+| `summary` | text | **AI.** Short feedback on speaking style |
+| `error_message` | string | Why the LLM step failed |
 
 ### Correction
 
 | Column | Type | Notes |
 |---|---|---|
 | `analysis_id` | references | |
-| `utterance_id` | references | |
-| `original`, `corrected` | text | |
+| `utterance_id` | references | Must be one of the user's own utterances |
+| `original` | text | Exact phrase from the utterance (validated before saving) |
+| `corrected` | text | |
 | `explanation` | text | |
-| `suggested_expression` | text, null | |
-| `category` | string | `grammar` / `naturalness` / … |
+| `category` | string | `grammar` / `naturalness` / `word_choice` |
 
 Stored as rows (not jsonb) so the Phase 3 review feature can query them.
 
@@ -85,3 +90,7 @@ Stored as rows (not jsonb) so the Phase 3 review feature can query them.
 - **`duration_seconds` comes from Deepgram**, because values sent by the browser can be
   tampered with. The 5-minute limit is enforced in the browser for UX and by file size on
   the server.
+- **(2026-10-30) `filler_stats` became `habit_stats`, and `Correction.suggested_expression`
+  was dropped.** Habits are now found by the LLM in context instead of a keyword list
+  (ADR 003). For a naturalness fix, `corrected` already holds the more natural sentence,
+  and alternatives for overused words live in `Analysis.suggestions`.
