@@ -58,3 +58,16 @@ Split the work by what each side is good at.
 - Each analysis costs one LLM call, so the daily limit per user (CLAUDE.md §8) matters.
 - If the LLM call fails, word stats are still shown and the analysis is marked failed on
   its own (`Analysis.status`), instead of failing the whole recording.
+
+## Implementation notes (2026-10-30)
+
+- **Model:** Claude Opus 5.5 (`claude-opus-5-5`) at `effort: medium`, with structured outputs
+  (`output_config.format` JSON schema) and server-side refusal fallbacks (`fallbacks: :default`).
+  Feedback for the test transcript (8 sentences) took about 20 seconds.
+- **Official `anthropic` gem, unlike Deepgram.** We call Deepgram with `Net::HTTP` to avoid a
+  dependency (ADR 001). For Claude we use the official SDK because it is maintained by the API
+  provider, ships typed errors per status code (`Anthropic::Errors::RateLimitError`, …) and built-in
+  retries, and keeps up with new request parameters such as structured outputs and fallbacks.
+  Re-implementing that by hand would be more code to own, not less.
+- **Sentence IDs are positions in the prompt** (0, 1, 2…), not database IDs. `Feedback::Verifier`
+  maps them back and drops anything that points at the other speaker's sentence.

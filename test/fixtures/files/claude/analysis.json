@@ -1,0 +1,126 @@
+{
+  "summary": "You give a clear, logical introduction: your experience, what interests you, a concrete project, and why you applied. That structure works well for an interview. Your message gets weaker when filler words pile up, especially at the start of sentences and in the middle of your main point. You also lost your thread in the middle (\"a lot of... from... a lot from...\"). Slow down, pause silently instead of filling the gap, and finish each sentence before starting the next idea.",
+  "corrections": [
+    {
+      "sentence_id": 2,
+      "original": "that help users to track",
+      "corrected": "that helps users track",
+      "explanation": "The subject \"a feature\" is singular, so the verb needs \"helps\" (or \"helped\" for past). Also, \"help someone do something\" sounds more natural without \"to\".",
+      "category": "grammar"
+    },
+    {
+      "sentence_id": 6,
+      "original": "that, you know, care about",
+      "corrected": "that cares about",
+      "explanation": "\"A team\" takes a singular verb, so use \"cares\". Dropping \"you know\" here also makes your key point sound more confident.",
+      "category": "grammar"
+    },
+    {
+      "sentence_id": 1,
+      "original": "but because",
+      "corrected": "because",
+      "explanation": "\"But\" signals a contrast, and there isn't one here. Use \"because\" alone to give the reason.",
+      "category": "grammar"
+    },
+    {
+      "sentence_id": 3,
+      "original": "I learned a lot of...",
+      "corrected": "I learned a lot from it.",
+      "explanation": "You restarted this phrase three times (sentences 3–5). Pick the simple version, \"I learned a lot from it,\" and finish it. Even better, add one specific thing you learned.",
+      "category": "naturalness"
+    },
+    {
+      "sentence_id": 7,
+      "original": "this is, the main reason I applied",
+      "corrected": "that's the main reason I applied",
+      "explanation": "Use \"that\" when you refer back to something you just said. The contraction \"that's\" also sounds more natural in speech.",
+      "category": "naturalness"
+    },
+    {
+      "sentence_id": 1,
+      "original": "very productive",
+      "corrected": "really efficient to build with",
+      "explanation": "\"Very productive\" is vague when talking about a framework. Saying what makes it productive (fast to build with, strong conventions) sounds more expert.",
+      "category": "word_choice"
+    },
+    {
+      "sentence_id": 3,
+      "original": "kind of challenging",
+      "corrected": "challenging",
+      "explanation": "\"Kind of\" weakens your statement. In an interview, it's better to say confidently that the project was challenging.",
+      "category": "naturalness"
+    }
+  ],
+  "habit_occurrences": [
+    {
+      "sentence_id": 1,
+      "phrase": "actually"
+    },
+    {
+      "sentence_id": 1,
+      "phrase": "like"
+    },
+    {
+      "sentence_id": 1,
+      "phrase": "you know"
+    },
+    {
+      "sentence_id": 3,
+      "phrase": "i mean"
+    },
+    {
+      "sentence_id": 3,
+      "phrase": "kind of"
+    },
+    {
+      "sentence_id": 6,
+      "phrase": "basically"
+    },
+    {
+      "sentence_id": 6,
+      "phrase": "you know"
+    },
+    {
+      "sentence_id": 7,
+      "phrase": "yeah"
+    }
+  ],
+  "suggestions": [
+    {
+      "phrase": "you know",
+      "alternatives": [
+        "(a short silent pause)",
+        "for example",
+        "which means"
+      ],
+      "tip": "When you feel \"you know\" coming, pause silently for a second instead. It sounds more thoughtful and confident."
+    },
+    {
+      "phrase": "actually / basically / i mean (sentence openers)",
+      "alternatives": [
+        "(just start with your point)",
+        "What I like most is...",
+        "The main reason is..."
+      ],
+      "tip": "Start your sentences directly with the point. Openers like \"actually\" and \"basically\" add no meaning and can make you sound unsure."
+    },
+    {
+      "phrase": "kind of",
+      "alternatives": [
+        "quite",
+        "pretty",
+        "(remove it)"
+      ],
+      "tip": "Use a confident word like \"quite\" or just drop \"kind of\", because hedging makes your achievements sound smaller."
+    },
+    {
+      "phrase": "like",
+      "alternatives": [
+        "(remove it)",
+        "really",
+        "genuinely"
+      ],
+      "tip": "Remove \"like\" when it's only filling space, and use \"genuinely\" or \"really\" if you want to add emphasis."
+    }
+  ]
+}
