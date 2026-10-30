@@ -12,7 +12,7 @@
     <dt class="font-medium">Status</dt>
     <dd id="recording_status">
       <%= @recording.status.humanize %>
-      <% if @recording.uploaded? || @recording.transcribing? %>
+      <% if @recording.uploaded? || @recording.transcribing? || @recording.analyzing? %>
         <span class="text-sm text-gray-500">· This page updates automatically.</span>
       <% end %>
     </dd>
@@ -43,12 +43,19 @@
     <audio controls src="<%= url_for(@recording.audio) %>" class="mt-6 w-full"></audio>
   <% end %>
 
+  <% if @recording.awaiting_speaker? %>
+    <%= render "speaker_picker", recording: @recording %>
+  <% end %>
+
   <% if @recording.utterances.any? %>
     <h2 class="font-bold text-2xl mt-10">Transcript</h2>
     <ol class="mt-4 space-y-3">
       <% @recording.utterances.each do |utterance| %>
         <li>
           <span class="font-medium"><%= utterance.speaker_name %></span>
+          <% if utterance.mine? %>
+            <span class="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">You</span>
+          <% end %>
           <span class="text-sm text-gray-500"><%= Time.at(utterance.start_ms / 1000).utc.strftime("%-M:%S") %></span>
           <p><%= utterance.text %></p>
         </li>

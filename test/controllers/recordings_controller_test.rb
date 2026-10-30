@@ -59,4 +59,22 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
     get recording_path(recordings(:two))
     assert_response :not_found
   end
+
+  test "show asks which speaker I am while awaiting a speaker" do
+    recordings(:one).update!(status: :awaiting_speaker)
+
+    get recording_path(recordings(:one))
+
+    assert_select "#speaker_picker li", count: 2
+    assert_select "#speaker_picker", text: /Tell me about yourself/
+  end
+
+  test "show marks my lines after I pick a speaker" do
+    recordings(:one).update!(status: :completed, my_speaker: 1)
+
+    get recording_path(recordings(:one))
+
+    assert_select "#speaker_picker", count: 0
+    assert_select "li", text: /Speaker B\s+You/
+  end
 end
