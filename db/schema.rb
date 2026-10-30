@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_30_063947) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_200018) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_063947) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "analyses", force: :cascade do |t|
+    t.bigint "recording_id", null: false
+    t.string "status", default: "pending", null: false
+    t.jsonb "word_stats", default: {}, null: false
+    t.jsonb "habit_stats", default: {}, null: false
+    t.jsonb "suggestions", default: [], null: false
+    t.text "summary"
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recording_id"], name: "index_analyses_on_recording_id", unique: true
+  end
+
+  create_table "corrections", force: :cascade do |t|
+    t.bigint "analysis_id", null: false
+    t.bigint "utterance_id", null: false
+    t.text "original", null: false
+    t.text "corrected", null: false
+    t.text "explanation", null: false
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["analysis_id"], name: "index_corrections_on_analysis_id"
+    t.index ["utterance_id"], name: "index_corrections_on_utterance_id"
   end
 
   create_table "recordings", force: :cascade do |t|
@@ -90,6 +116,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_063947) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "analyses", "recordings"
+  add_foreign_key "corrections", "analyses", on_delete: :cascade
+  add_foreign_key "corrections", "utterances", on_delete: :cascade
   add_foreign_key "recordings", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "utterances", "recordings"

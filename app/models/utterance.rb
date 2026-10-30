@@ -1,5 +1,6 @@
 class Utterance < ApplicationRecord
   belongs_to :recording
+  has_many :corrections, dependent: :delete_all
 
   validates :speaker, :text, :start_ms, :end_ms, presence: true
 
