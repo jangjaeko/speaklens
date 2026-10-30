@@ -39,10 +39,19 @@ class RecordingTest < ActiveSupport::TestCase
 
   test "rejects files over the size limit" do
     recording = build_recording
-    recording.audio.blob.byte_size = Recording::MAX_AUDIO_SIZE + 1
+    recording.audio.blob.byte_size = 15.megabytes + 1
 
     assert_not recording.valid?
-    assert_includes recording.errors[:audio], "must be smaller than 25 MB"
+    assert_includes recording.errors[:audio], "must be smaller than 15 MB"
+  end
+
+  test "limits grow with the user's allowed minutes" do
+    users(:one).update!(max_recording_minutes: 60)
+    recording = build_recording
+    recording.audio.blob.byte_size = 100.megabytes
+
+    assert_equal 60.minutes, recording.max_duration
+    assert recording.valid?
   end
 
   test "privacy options default to on" do

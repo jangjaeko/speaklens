@@ -20,6 +20,16 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
   test "new" do
     get new_recording_path
     assert_response :success
+    assert_select "form[data-recorder-max-seconds-value='300']"
+  end
+
+  test "new uses my own recording limit" do
+    users(:one).update!(max_recording_minutes: 60)
+
+    get new_recording_path
+
+    assert_select "form[data-recorder-max-seconds-value='3600']"
+    assert_select "span", text: "max 60 min"
   end
 
   test "create uploads the audio and starts transcription" do

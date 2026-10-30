@@ -24,8 +24,8 @@ class TranscribeRecordingJob < ApplicationJob
 
     if result.utterances.empty?
       recording.update!(status: :failed, error_message: "No speech was detected in this recording.")
-    elsif result.duration_seconds > Recording::MAX_DURATION + 10.seconds
-      recording.update!(status: :failed, error_message: "Recordings can be at most #{Recording::MAX_DURATION.in_minutes.to_i} minutes long.")
+    elsif result.duration_seconds > recording.max_duration + 10.seconds
+      recording.update!(status: :failed, error_message: "Recordings can be at most #{recording.max_duration.in_minutes.to_i} minutes long.")
     else
       save_transcript(recording, result)
     end

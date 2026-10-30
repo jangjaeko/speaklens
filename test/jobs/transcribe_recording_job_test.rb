@@ -65,6 +65,14 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
     assert_equal "No speech was detected in this recording.", @recording.error_message
   end
 
+  test "accepts long recordings from users with a higher limit" do
+    users(:one).update!(max_recording_minutes: 60)
+
+    perform_with FakeClient.new(result: deepgram_result.with(duration_seconds: 45 * 60.0))
+
+    assert_predicate @recording, :awaiting_speaker?
+  end
+
   test "fails recordings longer than the limit" do
     perform_with FakeClient.new(result: deepgram_result.with(duration_seconds: 400.0))
 

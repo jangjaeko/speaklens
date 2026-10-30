@@ -1,6 +1,7 @@
 class Recording < ApplicationRecord
-  MAX_DURATION = 5.minutes
-  MAX_AUDIO_SIZE = 25.megabytes
+  # Browser recordings are about 1 MB per minute; allow double that plus some headroom.
+  AUDIO_SIZE_PER_MINUTE = 2.megabytes
+  AUDIO_SIZE_HEADROOM = 5.megabytes
   # Chrome records audio/webm, Safari audio/mp4. Content sniffing can label either as video/*.
   ALLOWED_AUDIO_TYPES = %w[audio/webm audio/mp4 audio/mpeg audio/ogg audio/wav audio/x-wav video/webm video/mp4].freeze
 
@@ -27,6 +28,14 @@ class Recording < ApplicationRecord
   validates :consent_confirmed_at, presence: { message: "is required. Let the other person know you're recording." }
   validate :audio_must_be_valid, on: :create
 
+  def max_duration
+    user.max_recording_minutes.minutes
+  end
+
+  def max_audio_size
+    user.max_recording_minutes * AUDIO_SIZE_PER_MINUTE + AUDIO_SIZE_HEADROOM
+  end
+
   # Speaker numbers that appear in the transcript, e.g. [0, 1].
   def speakers
     utterances.reorder(:speaker).distinct.pluck(:speaker)
@@ -49,8 +58,8 @@ class Recording < ApplicationRecord
         errors.add(:audio, "must be attached")
       elsif !audio.content_type.in?(ALLOWED_AUDIO_TYPES)
         errors.add(:audio, "must be an audio file")
-      elsif audio.byte_size > MAX_AUDIO_SIZE
-        errors.add(:audio, "must be smaller than #{MAX_AUDIO_SIZE / 1.megabyte} MB")
+      elsif audio.byte_size > max_audio_size
+        errors.add(:audio, "must be smaller than #{max_audio_size / 1.megabyte} MB")
       end
     end
 end
