@@ -1,0 +1,14 @@
+# recordings(:one) is a two-person conversation.
+interviewer_question:
+  recording: one
+  speaker: 0
+  text: "Tell me about yourself."
+  start_ms: 1000
+  end_ms: 2500
+
+my_answer:
+  recording: one
+  speaker: 1
+  text: "I build a feature that help users track habits."
+  start_ms: 3000
+  end_ms: 6000

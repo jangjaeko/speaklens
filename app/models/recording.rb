@@ -6,7 +6,7 @@ class Recording < ApplicationRecord
 
   belongs_to :user
   has_one_attached :audio
-  has_many :utterances, -> { order(:start_ms) }, dependent: :delete_all
+  has_many :utterances, -> { order(:start_ms) }, dependent: :delete_all, inverse_of: :recording
 
   # After every change, tell open pages showing this recording to reload themselves.
   broadcasts_refreshes
@@ -26,6 +26,18 @@ class Recording < ApplicationRecord
 
   validates :consent_confirmed_at, presence: { message: "is required. Let the other person know you're recording." }
   validate :audio_must_be_valid, on: :create
+
+  # Speaker numbers that appear in the transcript, e.g. [0, 1].
+  def speakers
+    utterances.reorder(:speaker).distinct.pluck(:speaker)
+  end
+
+  # "I am Speaker A". Returns false if the recording isn't waiting for this, or the speaker isn't in it.
+  def select_speaker(speaker)
+    return false unless awaiting_speaker? && speakers.include?(speaker)
+
+    update(my_speaker: speaker, status: :analyzing)
+  end
 
   private
     def record_consent_time

@@ -61,4 +61,30 @@ class RecordingTest < ActiveSupport::TestCase
 
     assert_turbo_stream_broadcasts recording, count: 1
   end
+
+  test "lists the speakers in the transcript" do
+    assert_equal [ 0, 1 ], recordings(:one).speakers
+  end
+
+  test "selecting a speaker starts analysis" do
+    recording = recordings(:one)
+    recording.update!(status: :awaiting_speaker)
+
+    assert recording.select_speaker(1)
+    assert_equal 1, recording.reload.my_speaker
+    assert_predicate recording, :analyzing?
+  end
+
+  test "cannot select a speaker who isn't in the transcript" do
+    recording = recordings(:one)
+    recording.update!(status: :awaiting_speaker)
+
+    assert_not recording.select_speaker(5)
+    assert_not recording.select_speaker(nil)
+    assert_nil recording.reload.my_speaker
+  end
+
+  test "cannot select a speaker before transcription is done" do
+    assert_not recordings(:one).select_speaker(1)
+  end
 end
