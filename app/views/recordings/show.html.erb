@@ -47,6 +47,15 @@
     <%= render "speaker_picker", recording: @recording %>
   <% end %>
 
+  <% if @recording.analyzing? || @recording.analysis %>
+    <%= render "analysis", analysis: @recording.analysis %>
+  <% end %>
+
+  <% if @recording.analyzable? %>
+    <%= button_to (@recording.analysis ? "Try AI feedback again" : "Get AI feedback"), recording_analysis_path(@recording),
+          class: "mt-8 rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+  <% end %>
+
   <% if @recording.utterances.any? %>
     <h2 class="font-bold text-2xl mt-10">Transcript</h2>
     <ol class="mt-4 space-y-3">

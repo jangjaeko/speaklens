@@ -87,4 +87,27 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#speaker_picker", count: 0
     assert_select "li", text: /Speaker B\s+You/
   end
+
+  test "show displays AI feedback" do
+    recording = recordings(:one)
+    recording.update!(status: :completed, my_speaker: 1)
+    analysis = recording.create_analysis!(status: :completed, summary: "Clear answer.", habit_stats: { "like" => 2 },
+      word_stats: { "total_words" => 9, "unique_words" => 9, "top_words" => [ [ "habits", 1 ] ] })
+    analysis.corrections.create!(utterance: utterances(:my_answer), original: "I build", corrected: "I built", explanation: "Past tense.", category: :grammar)
+
+    get recording_path(recording)
+
+    assert_select "#analysis", text: /Clear answer\./
+    assert_select "#analysis li", text: /I build\s+→\s+I built/
+    assert_select "#analysis td", text: "“like”"
+    assert_select "button", text: "Get AI feedback", count: 0
+  end
+
+  test "show offers AI feedback for a finished recording without it" do
+    recordings(:one).update!(status: :completed, my_speaker: 1)
+
+    get recording_path(recordings(:one))
+
+    assert_select "button", text: "Get AI feedback"
+  end
 end

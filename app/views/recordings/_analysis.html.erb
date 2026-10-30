@@ -1,0 +1,86 @@
+<section id="analysis" class="mt-10 space-y-8">
+  <% if analysis.nil? || analysis.pending? %>
+    <p class="text-gray-600">Analyzing your speech. This page updates automatically.</p>
+  <% end %>
+
+  <% if analysis&.failed? %>
+    <p class="text-red-500"><%= analysis.error_message %></p>
+  <% end %>
+
+  <% if analysis&.summary.present? %>
+    <div>
+      <h2 class="font-bold text-2xl">Feedback</h2>
+      <p class="mt-3"><%= analysis.summary %></p>
+    </div>
+  <% end %>
+
+  <% if analysis&.corrections&.any? %>
+    <div>
+      <h2 class="font-bold text-2xl">Corrections</h2>
+      <ul class="mt-3 space-y-4">
+        <% analysis.corrections.each do |correction| %>
+          <li class="p-3 rounded-lg bg-gray-50">
+            <span class="text-xs font-medium px-1.5 py-0.5 rounded bg-gray-200"><%= correction.category.humanize %></span>
+            <p class="mt-2">
+              <span class="line-through text-red-600"><%= correction.original %></span>
+              → <span class="font-medium text-green-700"><%= correction.corrected %></span>
+            </p>
+            <p class="mt-1 text-sm text-gray-600"><%= correction.explanation %></p>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if analysis&.habit_stats.present? %>
+    <div>
+      <h2 class="font-bold text-2xl">Verbal habits</h2>
+      <p class="mt-1 text-sm text-gray-600">Words used as fillers in context, as judged by AI and counted by the app.</p>
+      <table class="mt-3 w-full max-w-sm">
+        <tbody>
+          <% analysis.habits_by_count.each do |phrase, count| %>
+            <tr class="border-b border-gray-100">
+              <td class="py-1">“<%= phrase %>”</td>
+              <td class="py-1 text-right tabular-nums"><%= count %>×</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if analysis&.suggestions.present? %>
+    <div>
+      <h2 class="font-bold text-2xl">Try saying instead</h2>
+      <ul class="mt-3 space-y-3">
+        <% analysis.suggestions.each do |suggestion| %>
+          <li>
+            <span class="font-medium">“<%= suggestion["phrase"] %>”</span> → <%= suggestion["alternatives"].join(", ") %>
+            <p class="text-sm text-gray-600"><%= suggestion["tip"] %></p>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if analysis&.word_stats.present? %>
+    <div>
+      <h2 class="font-bold text-2xl">Your words</h2>
+      <p class="mt-1 text-sm text-gray-600">
+        <%= analysis.word_stats["total_words"] %> words, <%= analysis.word_stats["unique_words"] %> different
+      </p>
+      <% if analysis.word_stats["top_words"].any? %>
+        <table class="mt-3 w-full max-w-sm">
+          <tbody>
+            <% analysis.word_stats["top_words"].each do |word, count| %>
+              <tr class="border-b border-gray-100">
+                <td class="py-1"><%= word %></td>
+                <td class="py-1 text-right tabular-nums"><%= count %>×</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  <% end %>
+</section>

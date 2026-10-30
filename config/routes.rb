@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :registration, only: %i[ new create ]
   resources :recordings, only: %i[ index show new create ] do
     resource :speaker, only: :update, module: :recordings
+    resource :analysis, only: :create, module: :recordings
   end
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

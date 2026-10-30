@@ -7,6 +7,7 @@ class Recording < ApplicationRecord
 
   belongs_to :user
   has_one_attached :audio
+  has_one :analysis, dependent: :destroy
   has_many :utterances, -> { order(:start_ms) }, dependent: :delete_all, inverse_of: :recording
 
   # After every change, tell open pages showing this recording to reload themselves.
@@ -46,6 +47,21 @@ class Recording < ApplicationRecord
     return false unless awaiting_speaker? && speakers.include?(speaker)
 
     update(my_speaker: speaker, status: :analyzing)
+  end
+
+  # Analysis can be (re)started once the recording is done and has no successful analysis yet,
+  # e.g. it was recorded before AI feedback existed, or Claude was unavailable.
+  def analyzable?
+    completed? && my_speaker.present? && !analysis&.completed?
+  end
+
+  def restart_analysis
+    return false unless analyzable?
+
+    transaction do
+      analysis&.destroy!
+      analyzing!
+    end
   end
 
   private
