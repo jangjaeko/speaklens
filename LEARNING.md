@@ -40,3 +40,16 @@ Concepts learned, problems I got stuck on, and how they were solved.
 - `rails/health#show` returns 200 if the app boots without exceptions. It does **not**
   query the database, so a green `/up` does not prove the DB works. That needs a page that
   reads from the DB.
+
+## 2026-10-29 — `uninitialized constant TranscribeRecordingJob::Transcription`
+
+- **Problem:** Uploading a recording returned a 500 error in development. All tests passed,
+  and running the job with `bin/rails runner` worked.
+- **Why:** Rails sets Zeitwerk's autoload roots (`app/models`, `app/jobs`, …) **when the
+  server boots**. The dev server had been running since before `app/services/` existed, so
+  it never learned to look there. Code *reloading* picks up new files inside known roots,
+  but not a brand-new `app/*` directory. Tests and `runner` start a fresh process, so they
+  saw it.
+- **Fix:** Restart the server.
+- **Lesson:** After creating a new top-level folder under `app/`, restart `bin/dev`.
+  Check with `bin/rails runner 'puts Rails.autoloaders.main.dirs'`.
