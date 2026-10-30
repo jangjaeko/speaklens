@@ -1,6 +1,7 @@
 require "test_helper"
 
 class RecordingTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
   def build_recording(consent: true, file: "sample.wav", content_type: nil)
     recording = users(:one).recordings.new(consent: consent)
     recording.audio.attach(io: file_fixture(file).open, filename: file, content_type: content_type) if file
@@ -49,5 +50,15 @@ class RecordingTest < ActiveSupport::TestCase
 
     assert recording.delete_audio_after_transcription?
     assert recording.discard_others_utterances?
+  end
+
+  test "tells open pages to refresh when it changes" do
+    recording = recordings(:one)
+
+    perform_enqueued_jobs do
+      recording.transcribing!
+    end
+
+    assert_turbo_stream_broadcasts recording, count: 1
   end
 end

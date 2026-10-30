@@ -8,6 +8,9 @@ class Recording < ApplicationRecord
   has_one_attached :audio
   has_many :utterances, -> { order(:start_ms) }, dependent: :delete_all
 
+  # After every change, tell open pages showing this recording to reload themselves.
+  broadcasts_refreshes
+
   enum :status, {
     uploaded: "uploaded",
     transcribing: "transcribing",

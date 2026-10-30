@@ -81,7 +81,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
   end
 
   test "fails without retrying on a permanent error" do
-    assert_no_enqueued_jobs do
+    assert_no_enqueued_jobs only: TranscribeRecordingJob do
       perform_with FakeClient.new(raises: Transcription::Client::PermanentError.new("HTTP 400"))
     end
 
