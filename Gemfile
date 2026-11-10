@@ -64,4 +64,4 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "anthropic", "~> 2.3"
+gem "anthropic", "~> 2.6"
